@@ -1,4 +1,5 @@
 ﻿using cat.itb.M6NF2Prac.cruds;
+using cat.itb.M6NF2Prac.model;
 
 namespace cat.itb.M6NF2Prac
 {
@@ -105,7 +106,16 @@ namespace cat.itb.M6NF2Prac
         }
         public static void Exercise1()
         {
+            List<Client> clies = new List<Client>()
+            {
+                new Client() { Code = 2998, Name = "Sun Systems", Credit = 45000 },
+                new Client() { Code = 2677, Name = "Roxy Stars", Credit = 45000 },
+                new Client() { Code = 2865, Name = "Clen Ferrant", Credit = 45000 },
+                new Client() { Code = 2873, Name = "Roast Coast", Credit = 45000 }
+            };
+            ClientCRUD clientCRUD = new ClientCRUD();
 
+            clies.ForEach(x => clientCRUD.InsertADO(x));
         }
         public static void Exercise2()
         {

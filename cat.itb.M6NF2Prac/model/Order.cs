@@ -8,11 +8,12 @@ namespace cat.itb.M6NF2Prac.model
 {
     public class Order
     {
-        public int Id { get; set; }
-        // TODO: Product & Client
-        public DateTime OrderDate { get; set; }
-        public int Amount { get; set; }
-        public DateTime DeliveryDate { get; set; }
-        public float Cost { get; set; }
+        public virtual int Id { get; set; }
+        public virtual Product Product { get; set; }
+        public virtual Client Client { get; set; }
+        public virtual DateTime OrderDate { get; set; }
+        public virtual int Amount { get; set; }
+        public virtual DateTime DeliveryDate { get; set; }
+        public virtual float Cost { get; set; }
     }
 }
