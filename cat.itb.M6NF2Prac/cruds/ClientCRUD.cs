@@ -1,5 +1,6 @@
 ﻿using cat.itb.M6NF2Prac.connections;
 using cat.itb.M6NF2Prac.model;
+using NHibernate;
 using Npgsql;
 using System;
 using System.Collections.Generic;
@@ -92,18 +93,22 @@ namespace cat.itb.M6NF2Prac.cruds
                 session.Close();
             }
         }
-        public void InsertADO(Client clie)
+        public void InsertADO(List<Client> clies)
         {
             StoreCloudConnection db = new StoreCloudConnection();
             using (NpgsqlConnection conn = db.GetConnection())
             {
                 using (NpgsqlCommand cmd = new NpgsqlCommand() { Connection = conn })
                 {
-                    string query = $"INSERT INTO CLIENT (code, name, credit) VALUES ({clie.Code}, '{clie.Name}', {clie.Credit})";
-                    cmd.CommandText = query;
-                    cmd.ExecuteNonQuery();
+                    foreach (Client clie in clies)
+                    {
+                        string query = $"INSERT INTO CLIENT (code, name, credit) VALUES ({clie.Code}, '{clie.Name}', {clie.Credit})";
+                        cmd.CommandText = query;
+                        cmd.ExecuteNonQuery();
 
-                    Console.WriteLine($"Client {clie.Code} {clie.Name} Insertat");
+                        Console.WriteLine($"Client {clie.Code} {clie.Name} Insertat");
+                    }
+                    Console.WriteLine("Clients inserits correctament");
                 }
             }
         }
@@ -149,6 +154,16 @@ namespace cat.itb.M6NF2Prac.cruds
                     Console.WriteLine($"Id: {clie.Id}, Client: {clie.Code} {clie.Name}, Eliminat");
                 }
             }
+        }
+        public Client? SelectByName(string name)
+        {
+            Client? clie = null;
+            using (var session = SessionFactoryStoreCloud.Open())
+            {
+                IQuery query = session.CreateQuery($"select c from Client c where c.Name like '{name}'");
+                clie = query.UniqueResult<Client>();
+            }
+            return clie;
         }
     }
 }

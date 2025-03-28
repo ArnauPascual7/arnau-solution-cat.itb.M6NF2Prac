@@ -13,7 +13,7 @@ namespace cat.itb.M6NF2Prac.maps
     {
         public ClientMap()
         {
-            Table("CLIENT");
+            Table("client");
             Id(x => x.Id);
             Map(x => x.Code).Column("code");
             Map(x => x.Name).Column("name");

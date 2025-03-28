@@ -1,5 +1,8 @@
 ﻿using cat.itb.M6NF2Prac.connections;
 using cat.itb.M6NF2Prac.model;
+using NHibernate;
+using NHibernate.SqlCommand;
+using Npgsql;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -90,6 +93,42 @@ namespace cat.itb.M6NF2Prac.cruds
                 }
                 session.Close();
             }
+        }
+        public void InsertADO(List<Salesperson> spers)
+        {
+            StoreCloudConnection db = new StoreCloudConnection();
+            using (NpgsqlConnection conn = db.GetConnection())
+            {
+                using (NpgsqlCommand cmd = new NpgsqlCommand() { Connection = conn })
+                {
+                    string query = $"INSERT INTO SALESPERSON (surname, job, startdate, salary, commission, dep) VALUES (@surname, @job, @startdate, @salary, @commission, @dep)";
+                    cmd.CommandText = query;
+                    foreach (Salesperson sper in spers)
+                    {
+                        cmd.Parameters.AddWithValue("surname", sper.Surname ?? (object)DBNull.Value);
+                        cmd.Parameters.AddWithValue("job", sper.Job ?? (object)DBNull.Value);
+                        cmd.Parameters.AddWithValue("startdate", sper.StartDate);
+                        cmd.Parameters.AddWithValue("salary", sper.Salary);
+                        cmd.Parameters.AddWithValue("commission", sper.Commission ?? (object)DBNull.Value);
+                        cmd.Parameters.AddWithValue("dep", sper.Dep ?? (object)DBNull.Value);
+                        cmd.ExecuteNonQuery();
+
+                        Console.WriteLine($"Venedor {sper.Surname} Insertat");
+                        cmd.Parameters.Clear();
+                    }
+                    Console.WriteLine("Venedors inserits correctament");
+                }
+            }
+        }
+        public Salesperson? SelectBySurname(string surname)
+        {
+            Salesperson? sper = null;
+            using (var session = SessionFactoryStoreCloud.Open())
+            {
+                IQuery query = session.CreateQuery($"select c from Salesperson c where c.Surname like '{surname}'");
+                sper = query.UniqueResult<Salesperson>();
+            }
+            return sper;
         }
     }
 }

@@ -108,7 +108,18 @@ namespace cat.itb.M6NF2Prac.cruds
                     {
                         provs.Add(new Provider()
                         {
-                            Id = reader.GetInt32(0)
+                            Id = reader.GetInt32(0),
+                            Name = reader.GetString(1),
+                            Address = reader.GetString(2),
+                            City = reader.GetString(3),
+                            StCode = reader.GetString(4),
+                            ZipCode = reader.GetString(5),
+                            Area = reader.GetInt32(6),
+                            Phone = reader.GetString(7),
+                            Product = new ProductCRUD().SelectById(reader.GetInt32(8)),
+                            Amount = reader.GetInt32(9),
+                            Credit = reader.GetInt32(10),
+                            Remark = reader.GetString(11)
                         });
                     }
                 }
