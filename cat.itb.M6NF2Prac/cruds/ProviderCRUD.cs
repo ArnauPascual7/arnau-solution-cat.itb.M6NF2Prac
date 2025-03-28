@@ -1,5 +1,6 @@
 ﻿using cat.itb.M6NF2Prac.connections;
 using cat.itb.M6NF2Prac.model;
+using Npgsql;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -90,6 +91,29 @@ namespace cat.itb.M6NF2Prac.cruds
                 }
                 session.Close();
             }
+        }
+        public IList<Provider> SelectCreditLowerThanADO(float credit)
+        {
+            List<Provider> provs = new List<Provider>();
+            StoreCloudConnection db = new StoreCloudConnection();
+            using (NpgsqlConnection conn = db.GetConnection())
+            {
+                using (NpgsqlCommand cmd = new NpgsqlCommand() { Connection = conn })
+                {
+                    string query = $"SELECT * FROM PROVIDER WHERE credit < {credit}";
+                    cmd.CommandText = query;
+
+                    NpgsqlDataReader reader = cmd.ExecuteReader();
+                    while (reader.Read())
+                    {
+                        provs.Add(new Provider()
+                        {
+                            Id = reader.GetInt32(0)
+                        });
+                    }
+                }
+            }
+            return provs;
         }
     }
 }

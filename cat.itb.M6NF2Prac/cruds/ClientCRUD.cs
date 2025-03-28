@@ -129,10 +129,26 @@ namespace cat.itb.M6NF2Prac.cruds
                             Name = reader.GetString(2),
                             Credit = reader.GetFloat(3),
                         };
+                        Console.WriteLine($"Client: {clie.Code} {clie.Name}, Crèdit: {clie.Credit}");
                     }
                 }
             }
             return clie;
+        }
+        public void DeleteADO(Client clie)
+        {
+            StoreCloudConnection db = new StoreCloudConnection();
+            using (NpgsqlConnection conn = db.GetConnection())
+            {
+                using (NpgsqlCommand cmd = new NpgsqlCommand() { Connection = conn })
+                {
+                    string query = "DELETE FROM CLIENT WHERE id = @id";
+                    cmd.CommandText = query;
+                    cmd.Parameters.AddWithValue("id", clie.Id);
+                    cmd.ExecuteNonQuery();
+                    Console.WriteLine($"Id: {clie.Id}, Client: {clie.Code} {clie.Name}, Eliminat");
+                }
+            }
         }
     }
 }

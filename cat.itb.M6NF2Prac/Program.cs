@@ -119,15 +119,32 @@ namespace cat.itb.M6NF2Prac
         }
         public static void Exercise2()
         {
-
+            ClientCRUD clientCRUD = new ClientCRUD();
+            Client? clie = clientCRUD.SelectByNameADO("Roast Coast");
+            if (clie != null)
+            {
+                clientCRUD.DeleteADO(clie);
+            }
         }
         public static void Exercise3()
         {
+            ProductCRUD productCRUD = new ProductCRUD();
+            List<int> codes = new List<int>() { 100890, 200376, 200380, 100861 };
+            List<float> newPrices = new List<float>() { 59.05f, 25.56f, 33.12f, 17.34f };
 
+            for (int i = 0; i < 4; i++)
+            {
+                Product? prod = productCRUD.SelectByCodeADO(codes[i]);
+                if (prod != null)
+                {
+                    prod.Price = newPrices[i];
+                    productCRUD.UpdateADO(prod);
+                }
+            }
         }
         public static void Exercise4()
         {
-
+            //TODO
         }
         public static void Exercise5()
         {
