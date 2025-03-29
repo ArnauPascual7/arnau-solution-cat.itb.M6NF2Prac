@@ -1,5 +1,7 @@
 ﻿using cat.itb.M6NF2Prac.connections;
 using cat.itb.M6NF2Prac.model;
+using NHibernate.Criterion;
+using Order = cat.itb.M6NF2Prac.model.Order;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -90,6 +92,16 @@ namespace cat.itb.M6NF2Prac.cruds
                 }
                 session.Close();
             }
+        }
+        public IList<Order> SelectByCostHigherThan(float cost, int amount)
+        {
+            IList<Order> ords = new List<Order>();
+            using (var session = SessionFactoryStoreCloud.Open())
+            {
+                var query = session.CreateCriteria<Order>().Add(Restrictions.Gt("Cost", cost)).Add(Restrictions.Eq("Amount", amount));
+                ords = query.List<Order>();
+            }
+            return ords;
         }
     }
 }

@@ -139,5 +139,17 @@ namespace cat.itb.M6NF2Prac.cruds
                 }
             }
         }
+        public IList<object[]> SelectByPriceHigherThan(float price)
+        {
+            IList<object[]> prods = new List<object[]>();
+            using (var session = SessionFactoryStoreCloud.Open())
+            {
+                var query = session.QueryOver<Product>()
+                    .Where(p => p.Price > price)
+                    .SelectList(list => list.Select(p => p.Description).Select(p => p.Price));
+                prods = query.List<object[]>();
+            }
+            return prods;
+        }
     }
 }

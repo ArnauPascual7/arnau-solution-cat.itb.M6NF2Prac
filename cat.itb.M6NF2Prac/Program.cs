@@ -195,10 +195,12 @@ namespace cat.itb.M6NF2Prac
         }
         public static void Exercise7()
         {
-            Console.WriteLine("Exercici 7: Mostrar els proveïdors dels productes que gestiona el venedor YOUNG");
+            const string sperSurname = "YOUNG";
+
+            Console.WriteLine($"Exercici 7: Mostrar els proveïdors dels productes que gestiona el venedor {sperSurname}");
 
             SalespersonCRUD salespersonCRUD = new SalespersonCRUD();
-            Salesperson? sper = salespersonCRUD.SelectBySurname("YOUNG");
+            Salesperson? sper = salespersonCRUD.SelectBySurname(sperSurname);
 
             if ( sper != null )
             {
@@ -206,42 +208,106 @@ namespace cat.itb.M6NF2Prac
                 {
                     foreach (Product p in sper.Products)
                     {
-                        Console.WriteLine($"Producte: {p.Code}, Proveïdor: {p.Provider.Name} {p.Provider.City} {p.Provider.ZipCode} {p.Provider.Phone}");
+                        Console.WriteLine($"Producte: {p.Code}, Proveïdor: (Nom:{p.Provider.Name}, Ciutat{p.Provider.City}, Codi postal: {p.Provider.ZipCode}, Telèfon: {p.Provider.Phone})");
                     }
                 }
                 else
                 {
-                    Console.WriteLine("El Venedor YOUNG no gestiona cap producte");
+                    Console.WriteLine($"El Venedor {sperSurname} no gestiona cap producte");
                 }
             }
         }
         public static void Exercise8()
         {
             Console.WriteLine("Exercici 8: Mostrar les comandes amb cost superior a 12000 i quantitat igual a 100");
+            // Totes les dades de cada comanda i la descripció i el preu del producte
+
+            OrderCRUD orderCRUD = new OrderCRUD();
+            List<Order> orders = orderCRUD.SelectByCostHigherThan(12000, 100).ToList();
+
+            foreach (Order o in orders )
+            {
+                Console.WriteLine($"Comanda - Id: {o.Id}, Data: {o.OrderDate}, Quantitat: {o.Amount}, Data d'entrega: {o.DeliveryDate}, Cost: {o.Cost}" +
+                    $"\nProducte - Descripció: {o.Product.Description}, Preu: {o.Product.Price}");
+            }
         }
         public static void Exercise9()
         {
+            Console.WriteLine("Exercici 9: Mostrar el proveïdor amb la quantitat mínima");
+            // Nom i quantitat del Proveïdor i descripció i stock del producte.
 
+            ProviderCRUD providerCRUD = new ProviderCRUD();
+            Provider? prov = providerCRUD.SelectLowestAmount();
+
+            if (prov != null)
+            {
+                Console.WriteLine($"Proveïdor: (Nom: {prov.Name}, Quntitat: {prov.Amount}), Producte: (Descripció: {prov.Product.Description}, Stock actual: {prov.Product.CurrentStock})");
+            }
         }
         public static void Exercise10()
         {
+            Console.WriteLine("Exercici 10: Insertar dos nous Productes i Proveïdors");
 
+            Product prod1 = new Product() { Code = 900001, Description = "Producte 900001", CurrentStock = 10, MinStock = 10, Price = 1.99f, Salesperson = new SalespersonCRUD().SelectById(7) };
+            Product prod2 = new Product() { Code = 900002, Description = "Producte 900002", CurrentStock = 10, MinStock = 10, Price = 3.99f, Salesperson = new SalespersonCRUD().SelectById(7) };
+
+            Provider prov1 = new Provider() { Name = "Proveïdor 1", Address = "C4", City = "BARC", StCode = "CB", ZipCode = "12321", Area = 1, Phone = "637-7361", Product = prod1, Amount = 1, Credit = 10, Remark = "None" };
+            Provider prov2 = new Provider() { Name = "Proveïdor 2", Address = "MP5", City = "BARC", StCode = "CB", ZipCode = "12321", Area = 2, Phone = "748-8472", Product = prod2, Amount = 2, Credit = 11, Remark = "None" };
+
+            new ProductCRUD().Insert(prod1);
+            new ProductCRUD().Insert(prod2);
+            new ProviderCRUD().Insert(prov1);
+            new ProviderCRUD().Insert(prov2);
         }
         public static void Exercise11()
         {
+            Console.WriteLine("Exercici 11: Mostrar tots els clients");
 
+            ClientCRUD clientCRUD = new ClientCRUD();
+            List<Client> clies = clientCRUD.SelectAll();
+
+            foreach (Client c in clies)
+            {
+                Console.WriteLine($"Client - Id: {c.Id}, Codi: {c.Code}, Nom: {c.Name}, Crèdit: {c.Credit}");
+            }
         }
         public static void Exercise12()
         {
+            Console.WriteLine("Exercici 12: Actualitzar el crèdit dels proveïdors de BELMONT");
 
+            ProviderCRUD providerCRUD = new ProviderCRUD();
+            List<Provider> provs = providerCRUD.SelectByCity("BELMONT").ToList();
+
+            foreach (Provider p in provs)
+            {
+                p.Credit = 25000;
+                providerCRUD.Update(p);
+            }
+
+            Console.WriteLine("Tots els Proveïdors han estat actualitzats correctament");
         }
         public static void Exercise13()
         {
+            Console.WriteLine("Exercici 13: Mostrar NOMÉS descripció i preu dels productes amb preu superior a 100");
 
+            ProductCRUD productCRUD = new ProductCRUD();
+            
+            foreach (var item in productCRUD.SelectByPriceHigherThan(100))
+            {
+                Console.WriteLine($"Producte - Descripció: {item[0]}, Preu: {item[1]}");
+            }
         }
         public static void Exercise14()
         {
+            Console.WriteLine("Exercici 14: Mostrar nom i crèdit dels clients amb crèdit superior a 50000");
 
+            ClientCRUD clientCRUD = new ClientCRUD();
+            List<Client> clies = clientCRUD.SelectByCreditHigherThan(50000).ToList();
+
+            foreach(Client c in clies)
+            {
+                Console.WriteLine($"Client - Nom: {c.Name}, Crèdit: {c.Credit}");
+            }
         }
     }
 }

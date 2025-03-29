@@ -1,5 +1,6 @@
 ﻿using cat.itb.M6NF2Prac.connections;
 using cat.itb.M6NF2Prac.model;
+using NHibernate.Criterion;
 using Npgsql;
 using System;
 using System.Collections.Generic;
@@ -54,7 +55,7 @@ namespace cat.itb.M6NF2Prac.cruds
                     {
                         session.Update(prov);
                         tx.Commit();
-                        Console.WriteLine($"Proveïdor  {prov.Name} Actualitzat");
+                        Console.WriteLine($"Proveïdor {prov.Name} Actualitzat");
                     }
                     catch (Exception ex)
                     {
@@ -123,6 +124,27 @@ namespace cat.itb.M6NF2Prac.cruds
                         });
                     }
                 }
+            }
+            return provs;
+        }
+        public Provider? SelectLowestAmount()
+        {
+            Provider? prov = null;
+            using (var session = SessionFactoryStoreCloud.Open())
+            {
+                QueryOver<Provider> lowestAmount = QueryOver.Of<Provider>().SelectList(p => p.SelectMin(a => a.Amount));
+                var query = session.QueryOver<Provider>().WithSubquery.WhereProperty(p => p.Amount).Eq(lowestAmount).SingleOrDefault();
+                prov = query;
+            }
+            return prov;
+        }
+        public IList<Provider> SelectByCity(string city)
+        {
+            IList<Provider> provs = new List<Provider>();
+            using (var session = SessionFactoryStoreCloud.Open())
+            {
+                var query = session.CreateQuery($"select c from Provider c where c.City like '{city}'");
+                provs = query.List<Provider>();
             }
             return provs;
         }

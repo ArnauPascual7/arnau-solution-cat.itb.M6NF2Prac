@@ -165,5 +165,15 @@ namespace cat.itb.M6NF2Prac.cruds
             }
             return clie;
         }
+        public IList<Client> SelectByCreditHigherThan(float credit)
+        {
+            IList<Client> clies = new List<Client>();
+            using (var session = SessionFactoryStoreCloud.Open())
+            {
+                var query = session.Query<Client>().Where(c => c.Credit > credit);
+                clies = query.ToList();
+            }
+            return clies;
+        }
     }
 }
