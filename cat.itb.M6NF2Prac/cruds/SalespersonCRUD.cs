@@ -94,6 +94,11 @@ namespace cat.itb.M6NF2Prac.cruds
                 session.Close();
             }
         }
+        // Pràctica
+        /// <summary>
+        /// Pràctica Exercici 5
+        /// </summary>
+        /// <param name="spers"></param>
         public void InsertADO(List<Salesperson> spers)
         {
             StoreCloudConnection db = new StoreCloudConnection();
@@ -120,6 +125,12 @@ namespace cat.itb.M6NF2Prac.cruds
                 }
             }
         }
+        // Pràctica
+        /// <summary>
+        /// Pràctica Exercici 7
+        /// </summary>
+        /// <param name="surname"></param>
+        /// <returns></returns>
         public Salesperson? SelectBySurname(string surname)
         {
             Salesperson? sper = null;
@@ -129,6 +140,137 @@ namespace cat.itb.M6NF2Prac.cruds
                 sper = query.UniqueResult<Salesperson>();
             }
             return sper;
+        }
+        // Examen
+        public Salesperson SelectByIdADO(int id)
+        {
+            Salesperson sper = new Salesperson();
+            StoreCloudConnection db = new StoreCloudConnection();
+            using (NpgsqlConnection conn = db.GetConnection())
+            {
+                using (NpgsqlCommand cmd = new NpgsqlCommand() { Connection = conn })
+                {
+                    string query = "SELECT * FROM SALESPERSON WHERE id = @id";
+                    cmd.CommandText = query;
+                    cmd.Parameters.AddWithValue("id", id);
+
+                    NpgsqlDataReader reader = cmd.ExecuteReader();
+                    if (reader.Read())
+                    {
+                        sper = new Salesperson()
+                        {
+                            Id = reader.GetInt32(0),
+                            Surname = reader.GetString(1),
+                            Job = reader.GetString(2),
+                            StartDate = reader.GetDateTime(3),
+                            Salary = reader.GetFloat(4),
+                            Commission = reader.GetFloat(5),
+                            Dep = reader.GetString(6)
+                        };
+                    }
+                }
+            }
+            return sper;
+        }
+        // Examen
+        /// <summary>
+        /// Examen Exercici 3
+        /// </summary>
+        /// <param name="job"></param>
+        /// <returns></returns>
+        public IList<Salesperson> SelectByJobADO(string job)
+        {
+            IList<Salesperson> spers = new List<Salesperson>();
+            StoreCloudConnection db = new StoreCloudConnection();
+            using (NpgsqlConnection conn = db.GetConnection())
+            {
+                using (NpgsqlCommand cmd = new NpgsqlCommand() { Connection = conn })
+                {
+                    string query = "SELECT * FROM SALESPERSON WHERE job = @job";
+                    cmd.CommandText = query;
+                    cmd.Parameters.AddWithValue("job", job);
+
+                    NpgsqlDataReader reader = cmd.ExecuteReader();
+                    while (reader.Read())
+                    {
+                        spers.Add(new Salesperson()
+                        {
+                            Id = reader.GetInt32(0),
+                            Surname = reader.GetString(1),
+                            Job = reader.GetString(2),
+                            StartDate = reader.GetDateTime(3),
+                            Salary = reader.GetFloat(4),
+                            Commission = reader.IsDBNull(5) ? null : reader.GetFloat(5),
+                            Dep = reader.GetString(6)
+                        });
+                    }
+                }
+            }
+            return spers;
+        }
+        // Examen
+        /// <summary>
+        /// Examen Exercici 3
+        /// </summary>
+        /// <param name="sper"></param>
+        public void UpdateADO(Salesperson sper)
+        {
+            StoreCloudConnection db = new StoreCloudConnection();
+            using (NpgsqlConnection conn = db.GetConnection())
+            {
+                using (NpgsqlCommand cmd = new NpgsqlCommand() { Connection = conn })
+                {
+                    string query = "UPDATE SALESPERSON SET salary = @salary WHERE id = @id";
+                    cmd.CommandText = query;
+                    cmd.Parameters.AddWithValue("salary", sper.Salary);
+                    cmd.Parameters.AddWithValue("id", sper.Id);
+                    cmd.ExecuteNonQuery();
+                    Console.WriteLine($"Salary Actualitzat del Venedor {sper.Surname}");
+
+                    cmd.Parameters.Clear();
+
+                    query = "UPDATE SALESPERSON SET commission = @comm WHERE id = @id";
+                    cmd.CommandText = query;
+                    cmd.Parameters.AddWithValue("comm", sper.Commission ?? (object)DBNull.Value);
+                    cmd.Parameters.AddWithValue("id", sper.Id);
+                    cmd.ExecuteNonQuery();
+                    Console.WriteLine($"Comissió Actualitzada del Venedor {sper.Surname}");
+                }
+            }
+        }
+        // Examen
+        /// <summary>
+        /// Examen Exercici 6
+        /// </summary>
+        /// <param name="job"></param>
+        /// <returns></returns>
+        public IList<Salesperson> SelectByJob(string job)
+        {
+            IList<Salesperson> spers = new List<Salesperson>();
+            using (var session = SessionFactoryStoreCloud.Open())
+            {
+                IQuery query = session.CreateQuery($"select c from Salesperson c where c.Job like '{job}'");
+                spers = query.List<Salesperson>();
+            }
+            return spers;
+        }
+        // Examen
+        /// <summary>
+        /// Examen Exercici 8
+        /// </summary>
+        /// <param name="salary"></param>
+        /// <param name="dep"></param>
+        /// <returns></returns>
+        public IList<Salesperson> SelectByJobSalaryLowerThan(float salary, string dep)
+        {
+            IList<Salesperson> spers = new List<Salesperson>();
+            using (var session = SessionFactoryStoreCloud.Open())
+            {
+                var query = session.Query<Salesperson>()
+                    .Where(sp => sp.Salary < salary && sp.Dep == dep);
+                spers = query.ToList<Salesperson>();
+            }
+            return spers;
         }
     }
 }

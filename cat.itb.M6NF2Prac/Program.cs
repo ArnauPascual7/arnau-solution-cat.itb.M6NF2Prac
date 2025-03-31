@@ -1,6 +1,7 @@
 ﻿using cat.itb.M6NF2Prac.cruds;
 using cat.itb.M6NF2Prac.model;
 using NHibernate.Util;
+using System.Diagnostics;
 
 namespace cat.itb.M6NF2Prac
 {
@@ -14,20 +15,30 @@ namespace cat.itb.M6NF2Prac
         {
             const string Menu = "Menú:" +
                 "\n[0] Netejar la base de dades" +
-                "\n[1] Exercici 1" +
-                "\n[2] Exercici 2" +
-                "\n[3] Exercici 3" +
-                "\n[4] Exercici 4" +
-                "\n[5] Exercici 5" +
-                "\n[6] Exercici 6" +
-                "\n[7] Exercici 7" +
-                "\n[8] Exercici 8" +
-                "\n[8] Exercici 9" +
-                "\n[8] Exercici 10" +
-                "\n[8] Exercici 11" +
-                "\n[8] Exercici 12" +
-                "\n[8] Exercici 13" +
-                "\n[8] Exercici 14" +
+                "\n[1] Prac Exercici 1" +
+                "\n[2] Prac Exercici 2" +
+                "\n[3] Prac Exercici 3" +
+                "\n[4] Prac Exercici 4" +
+                "\n[5] Prac Exercici 5" +
+                "\n[6] Prac Exercici 6" +
+                "\n[7] Prac Exercici 7" +
+                "\n[8] Prac Exercici 8" +
+                "\n[9] Prac Exercici 9" +
+                "\n[10] Prac Exercici 10" +
+                "\n[11] Prac Exercici 11" +
+                "\n[12] Prac Exercici 12" +
+                "\n[13] Prac Exercici 13" +
+                "\n[14] Prac Exercici 14" +
+                "\n[e1] Exam Exercici 1" +
+                "\n[e2] Exam Exercici 2" +
+                "\n[e3] Exam Exercici 3" +
+                "\n[e4] Exam Exercici 4" +
+                "\n[e5] Exam Exercici 5" +
+                "\n[e6] Exam Exercici 6" +
+                "\n[e7] Exam Exercici 7" +
+                "\n[e8] Exam Exercici 8" +
+                "\n[e9] Exam Exercici 9" +
+                "\n[e10] Exam Exercici 10" +
                 "\n[ex] Sortir" +
                 "\n";
 
@@ -83,6 +94,36 @@ namespace cat.itb.M6NF2Prac
                     break;
                 case "14":
                     Exercise14();
+                    break;
+                case "e1":
+                    ExamExercise1();
+                    break;
+                case "e2":
+                    ExamExercise2();
+                    break;
+                case "e3":
+                    ExamExercise3();
+                    break;
+                case "e4":
+                    ExamExercise4();
+                    break;
+                case "e5":
+                    ExamExercise5();
+                    break;
+                case "e6":
+                    ExamExercise6();
+                    break;
+                case "e7":
+                    ExamExercise7();
+                    break;
+                case "e8":
+                    ExamExercise8();
+                    break;
+                case "e9":
+                    ExamExercise9();
+                    break;
+                case "e10":
+                    ExamExercise10();
                     break;
                 case "ex" or "EX" or "Ex":
                     exit = true;
@@ -308,6 +349,122 @@ namespace cat.itb.M6NF2Prac
             {
                 Console.WriteLine($"Client - Nom: {c.Name}, Crèdit: {c.Credit}");
             }
+        }
+        public static void ExamExercise1()
+        {
+            ProductCRUD productCRUD = new ProductCRUD();
+            List<Product> prods = productCRUD.SelectBySalespersonIdADO(2).ToList();
+
+            foreach (Product p in prods)
+            {
+                Console.WriteLine($"Producte: (Id: {p.Id}, Codi: {p.Code}, Descripció: {p.Description}, Stock Actual: {p.CurrentStock}" +
+                    $", Stock Mínim: {p.MinStock}, Preu: {p.Price}), Venedor: {p.Salesperson.Surname}, Proveïdor: {p.Provider.Name}");
+            }
+        }
+        public static void ExamExercise2()
+        {
+            Order ord = new Order()
+            {
+                Product = new ProductCRUD().SelectByDescriptionADO("Hammer"),
+                Client = new ClientCRUD().SelectByNameADO("Orion Corp") ?? new Client(),
+                OrderDate = DateTime.Now,
+                Amount = 100,
+                DeliveryDate = DateTime.Now,
+                Cost = 500
+            };
+            new OrderCRUD().InsertADO(ord);
+        }
+        public static void ExamExercise3()
+        {
+            SalespersonCRUD salespersonCRUD = new SalespersonCRUD();
+            List<Salesperson> spers = salespersonCRUD.SelectByJobADO("MANAGER").ToList();
+
+            foreach(Salesperson sp in spers)
+            {
+                Console.WriteLine($"Venedor: (Id: {sp.Id}, Cognom: {sp.Surname}, Ofici: {sp.Job}, Data d'inici: {sp.StartDate}, Salari: {sp.Salary}, Comissió: {sp.Commission}, Dep: {sp.Dep})");
+                sp.Salary = 444000;
+                sp.Commission = 80000;
+            }
+            spers.ForEach(sp => salespersonCRUD.UpdateADO(sp));
+        }
+        public static void ExamExercise4()
+        {
+            ClientCRUD clientCRUD = new ClientCRUD();
+            List<int> ids = clientCRUD.SelectProductIdsByName("Carter & Sons");
+
+            if (ids.Count == 0)
+            {
+                Console.WriteLine("El client no ha fet cap comanda");
+            }
+            else
+            {
+                Console.WriteLine("Productes Comprats:");
+                ids.ForEach(id => Console.WriteLine($"Producte: {id}"));
+            }
+        }
+        public static void ExamExercise5()
+        {
+            ProviderCRUD providerCRUD = new ProviderCRUD();
+            List<object[]> objects = providerCRUD.SelectByStCode("CA").ToList();
+
+            foreach(object[] obj in objects)
+            {
+                Console.WriteLine($"Nom: {obj[0]}, Ciutat: {obj[1]}, Crèdit: {obj[2]}, Area: {obj[3]}");
+            }
+        }
+        public static void ExamExercise6()
+        {
+            SalespersonCRUD salespersonCRUD = new SalespersonCRUD();
+            List<Salesperson> spers = salespersonCRUD.SelectByJob("MANAGER").ToList();
+
+            foreach (Salesperson sp in spers)
+            {
+                Console.WriteLine($"Venedor: (Id: {sp.Id}, Cognom: {sp.Surname}, Ofici: {sp.Job}, Data d'inici: {sp.StartDate}, Salari: {sp.Salary}, Comissió: {sp.Commission}, Dep: {sp.Dep})");
+                foreach (Product p in sp.Products)
+                {
+                    Console.WriteLine($"Producte: (Descripció: {p.Description}, Stock Actual: {p.CurrentStock}, Preu: {p.Price})");
+                }
+            }
+        }
+        public static void ExamExercise7()
+        {
+            Order ord = new Order()
+            {
+                Product = new ProductCRUD().SelectByDescription("Hammer") ?? new Product(),
+                Client = new ClientCRUD().SelectByName("Orion Corp") ?? new Client(),
+                OrderDate = DateTime.Now,
+                Amount = 100,
+                DeliveryDate = DateTime.Now,
+                Cost = 1999
+            };
+            new OrderCRUD().Insert(ord);
+        }
+        public static void ExamExercise8()
+        {
+            SalespersonCRUD salespersonCRUD = new SalespersonCRUD();
+            List<Salesperson> spers = salespersonCRUD.SelectByJobSalaryLowerThan(150000, "WOOD").ToList();
+
+            foreach(Salesperson sp in spers)
+            {
+                Console.WriteLine($"Venedor: (Nom: {sp.Surname}, Salary: {sp.Salary}, Ofici: {sp.Job}, Dep: {sp.Dep})");
+            }
+        }
+        public static void ExamExercise9()
+        {
+            ProviderCRUD providerCRUD = new ProviderCRUD();
+            List<Provider> provs = providerCRUD.SelectByStAndCreditBetween("CA", 5000, 8000).ToList();
+
+            foreach(Provider p in provs)
+            {
+                Console.WriteLine($"Proveïdor: (Nom: {p.Name}, Adreça: {p.Address}, Ciutat: {p.City}, StCode: {p.StCode}, Codi Postal: {p.ZipCode}, Area: {p.Area}, Telèfon: {p.Phone}, Quntitat: {p.Amount}, Credit: {p.Credit}, Observació: {p.Remark})");
+            }
+        }
+        public static void ExamExercise10()
+        {
+            OrderCRUD orderCRUD = new OrderCRUD();
+            Order ord = orderCRUD.SelectLowestCost() ?? new Order();
+
+            Console.WriteLine($"Comanda - Nom del Producte: {ord.Product.Description}, Quantitat: {ord.Amount}, Despesa: {ord.Cost}");
         }
     }
 }

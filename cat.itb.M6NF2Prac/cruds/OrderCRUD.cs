@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Npgsql;
 
 namespace cat.itb.M6NF2Prac.cruds
 {
@@ -32,6 +33,11 @@ namespace cat.itb.M6NF2Prac.cruds
             }
             return ords;
         }
+        // Examen
+        /// <summary>
+        /// Examen Exercici 7
+        /// </summary>
+        /// <param name="ord"></param>
         public void Insert(Order ord)
         {
             using (var session = SessionFactoryStoreCloud.Open())
@@ -93,6 +99,13 @@ namespace cat.itb.M6NF2Prac.cruds
                 session.Close();
             }
         }
+        // Pràctica
+        /// <summary>
+        /// Pràctica Exercici 8
+        /// </summary>
+        /// <param name="cost"></param>
+        /// <param name="amount"></param>
+        /// <returns></returns>
         public IList<Order> SelectByCostHigherThan(float cost, int amount)
         {
             IList<Order> ords = new List<Order>();
@@ -102,6 +115,43 @@ namespace cat.itb.M6NF2Prac.cruds
                 ords = query.List<Order>();
             }
             return ords;
+        }
+        // Examen
+        /// <summary>
+        /// Examen Exercici 2
+        /// </summary>
+        /// <param name="ord"></param>
+        public void InsertADO(Order ord)
+        {
+            StoreCloudConnection db = new StoreCloudConnection();
+            using (NpgsqlConnection conn = db.GetConnection())
+            {
+                using (NpgsqlCommand cmd = new NpgsqlCommand() { Connection = conn })
+                {
+                    string query = $"INSERT INTO ORDERPROD (product, client, orderdate, amount, deliverydate, cost) " +
+                        $"VALUES ({ord.Product.Id}, {ord.Client.Id}, '{ord.OrderDate.Year}-{ord.OrderDate.Month}-{ord.OrderDate.Day}', {ord.Amount}, '{ord.DeliveryDate.Year}-{ord.DeliveryDate.Month}-{ord.DeliveryDate.Day}', {ord.Cost})";
+                    cmd.CommandText = query;
+                    cmd.ExecuteNonQuery();
+
+                    Console.WriteLine($"Comanda amb data {ord.OrderDate} Insertada");
+                }
+            }
+        }
+        // Examen
+        /// <summary>
+        /// Examen Exercici 10
+        /// </summary>
+        /// <returns></returns>
+        public Order? SelectLowestCost()
+        {
+            Order? prov = null;
+            using (var session = SessionFactoryStoreCloud.Open())
+            {
+                QueryOver<Order> lowestAmount = QueryOver.Of<Order>().SelectList(p => p.SelectMin(a => a.Cost));
+                var query = session.QueryOver<Order>().WithSubquery.WhereProperty(p => p.Cost).Eq(lowestAmount).SingleOrDefault();
+                prov = query;
+            }
+            return prov;
         }
     }
 }

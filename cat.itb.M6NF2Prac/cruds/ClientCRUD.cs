@@ -22,6 +22,11 @@ namespace cat.itb.M6NF2Prac.cruds
             }
             return clie;
         }
+        // Pràctica
+        /// <summary>
+        /// Pràctica Exercici 11
+        /// </summary>
+        /// <returns></returns>
         public List<Client> SelectAll()
         {
             List<Client> clies;
@@ -93,6 +98,11 @@ namespace cat.itb.M6NF2Prac.cruds
                 session.Close();
             }
         }
+        // Pràctica
+        /// <summary>
+        /// Pràctica Exercici 1
+        /// </summary>
+        /// <param name="clies"></param>
         public void InsertADO(List<Client> clies)
         {
             StoreCloudConnection db = new StoreCloudConnection();
@@ -112,6 +122,12 @@ namespace cat.itb.M6NF2Prac.cruds
                 }
             }
         }
+        // Pràctica i Examen
+        /// <summary>
+        /// Pràctica Exercici 2 i Examen Exercici 2
+        /// </summary>
+        /// <param name="name"></param>
+        /// <returns></returns>
         public Client? SelectByNameADO(string name)
         {
             Client? clie = null;
@@ -140,6 +156,11 @@ namespace cat.itb.M6NF2Prac.cruds
             }
             return clie;
         }
+        // Pràctica
+        /// <summary>
+        /// Pràctica Exercici 2
+        /// </summary>
+        /// <param name="clie"></param>
         public void DeleteADO(Client clie)
         {
             StoreCloudConnection db = new StoreCloudConnection();
@@ -155,6 +176,39 @@ namespace cat.itb.M6NF2Prac.cruds
                 }
             }
         }
+        // Examen
+        /// <summary>
+        /// Examen Exercici 4
+        /// </summary>
+        /// <param name="name"></param>
+        /// <returns></returns>
+        public List<int> SelectProductIdsByName(string name)
+        {
+            List<int> ids = new List<int>();
+            StoreCloudConnection db = new StoreCloudConnection();
+            using (NpgsqlConnection conn = db.GetConnection())
+            {
+                using (NpgsqlCommand cmd = new NpgsqlCommand() { Connection = conn })
+                {
+                    string query = "SELECT product FROM ORDERPROD WHERE client = (SELECT id FROM CLIENT WHERE name ILIKE @name)";
+                    cmd.CommandText = query;
+                    cmd.Parameters.AddWithValue("name", name);
+
+                    var reader = cmd.ExecuteReader();
+                    while (reader.Read())
+                    {
+                        ids.Add(reader.GetInt32(0));
+                    }
+                }
+            }
+            return ids;
+        }
+        // Pràtica i Examen
+        /// <summary>
+        /// Pràctica Exercici 6 i Examen Exercici 7
+        /// </summary>
+        /// <param name="name"></param>
+        /// <returns></returns>
         public Client? SelectByName(string name)
         {
             Client? clie = null;
@@ -165,6 +219,12 @@ namespace cat.itb.M6NF2Prac.cruds
             }
             return clie;
         }
+        // Pràctica
+        /// <summary>
+        /// Pràctica Exercici 14
+        /// </summary>
+        /// <param name="credit"></param>
+        /// <returns></returns>
         public IList<Client> SelectByCreditHigherThan(float credit)
         {
             IList<Client> clies = new List<Client>();
